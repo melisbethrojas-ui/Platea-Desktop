@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Configuracion de Platea</comment>
+<entry key="servidor">ws://localhost:3000</entry>
+<entry key="ubicacion">taquilla</entry>
+</properties>

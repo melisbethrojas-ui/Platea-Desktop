@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/19"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.project.CtrlPuerta"
+            minWidth="600.0"
+            minHeight="500.0"
+            stylesheets="@style.css"
+            styleClass="desktop-root">
+
+    <children>
+        <BorderPane AnchorPane.topAnchor="0.0"
+                    AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0">
+
+            <top>
+                <VBox alignment="CENTER"
+                      styleClass="top-bar">
+                    <padding>
+                        <Insets top="20.0" bottom="20.0"/>
+                    </padding>
+                    <children>
+                        <Label text="PORTA"
+                               styleClass="brand-title"/>
+                        <Label text="Validació d'entrades"
+                               styleClass="form-label"/>
+                    </children>
+                </VBox>
+            </top>
+
+            <center>
+                <VBox alignment="CENTER"
+                      spacing="20.0"
+                      styleClass="content-area">
+                    <padding>
+                        <Insets top="20.0" bottom="20.0"
+                                left="20.0" right="20.0"/>
+                    </padding>
+                    <children>
+                        <Label text="Codi de l'entrada"
+                               styleClass="section-title"/>
+                        <TextField fx:id="txtCodigoEntrada"
+                                   promptText="Introdueix el codi"
+                                   maxWidth="300.0"
+                                   styleClass="form-field"/>
+                        <Label fx:id="txtResultado"
+                               text="Esperant validació"
+                               styleClass="status-message"/>
+                    </children>
+                </VBox>
+            </center>
+
+            <bottom>
+                <HBox alignment="CENTER_RIGHT"
+                      styleClass="bottom-bar">
+                    <children>
+                        <Button text="Canviar configuració"
+                                onAction="#volverConfiguracion"
+                                styleClass="header-button"/>
+                    </children>
+                </HBox>
+            </bottom>
+
+        </BorderPane>
+    </children>
+</AnchorPane>
