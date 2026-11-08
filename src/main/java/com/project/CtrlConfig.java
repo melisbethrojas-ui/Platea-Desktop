@@ -32,7 +32,8 @@ public class CtrlConfig implements Initializable {
         choiceUbicacion.getItems().addAll(
             "taquilla",
             "porta",
-            "oficina"
+            "oficina",
+            "recintes"
         );
 
         choiceUbicacion.setValue("taquilla");

@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -153,6 +154,24 @@ public class CtrlTaquilla {
                     bloqueEvento.getChildren().add(datosEntrada);
                 }
             }
+
+            // Al hacer clic en la tarjeta se abre el mapa del evento.
+            bloqueEvento.setCursor(Cursor.HAND);
+
+            bloqueEvento.setOnMouseClicked(e -> {
+
+                UtilsViews.setView("ViewSalas");
+
+                if (Main.wsClient != null) {
+
+                    JSONObject request = new JSONObject();
+
+                    request.put("type", "mapa");
+                    request.put("esdev", id);
+
+                    Main.wsClient.safeSend(request.toString());
+                }
+            });
 
             // Añadimos el evento completo al contenedor principal.
             contenedorEventos.getChildren().add(bloqueEvento);
