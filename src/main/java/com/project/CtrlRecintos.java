@@ -100,21 +100,21 @@ public class CtrlRecintos implements Initializable{
         for (int f = 0; f < files; f++) {
             for (int c = 0; c < columnes; c++) {
 
-                JSONArray celula = matriu.getJSONArray(f).optJSONArray(c);
+                JSONArray celda = matriu.getJSONArray(f).optJSONArray(c);
 
                 // null = hueco: ahi no hay asiento.
-                if (celula == null) {
+                if (celda == null) {
                     continue;
                 }
 
                 double x = c * costat;
                 double y = f * costat;
 
-                Color colorZona = COLORS_ZONES.getOrDefault(celula.getString(0), Color.GRAY);
+                Color colorZona = COLORS_ZONES.getOrDefault(celda.getString(0), Color.GRAY);
                 gc.setFill(colorZona);
                 gc.fillRect(x, y, costat, costat);
 
-                boolean venut = celula.length() > 4 && "V".equals(celula.getString(3));
+                boolean venut = celda.length() > 4 && "V".equals(celda.getString(3));
 
                 gc.setFill(venut ? COLOR_VENUT : COLOR_LIURE);
                 gc.fillOval(x, y, costat, costat);
@@ -138,20 +138,20 @@ public class CtrlRecintos implements Initializable{
             return;
         }
 
-        JSONArray celula = matriu.getJSONArray(fila).optJSONArray(columna);
+        JSONArray celda = matriu.getJSONArray(fila).optJSONArray(columna);
 
-        if (celula == null || celula.length() < 9 || !"V".equals(celula.getString(3))) {
+        if (celda == null || celda.length() < 9 || !"V".equals(celda.getString(3))) {
             return;
         }
 
-        String zona = celula.getString(0);
-        int filaZona = celula.getInt(1);
-        int numero = celula.getInt(2);
-        String codi = celula.getString(4);
-        String comprador = celula.getString(5);
-        String correu = celula.getString(6);
-        String dataCompra = celula.getString(7);
-        double preu = celula.getDouble(8);
+        String zona = celda.getString(0);
+        int filaZona = celda.getInt(1);
+        int numero = celda.getInt(2);
+        String codi = celda.getString(4);
+        String comprador = celda.getString(5);
+        String correu = celda.getString(6);
+        String dataCompra = celda.getString(7);
+        double preu = celda.getDouble(8);
 
         txtDetallVenda.setText(
             "Zona " + zona + " - fila " + filaZona + ", seient " + numero + "\n"
