@@ -20,6 +20,7 @@ public class Main extends Application {
     public static CtrlConfig ctrlConfig;
     public static CtrlSockets ctrlSockets;
     public static CtrlTaquilla ctrlTaquilla;
+    public static CtrlRecintos ctrlSalas;
 
     public static void main(String[] args) {
         launch(args);
@@ -39,11 +40,13 @@ public class Main extends Application {
         UtilsViews.addView(getClass(), "ViewTaquilla", "/assets/viewTaquilla.fxml");
         UtilsViews.addView(getClass(), "ViewPuerta", "/assets/viewPuerta.fxml");
         UtilsViews.addView(getClass(), "ViewOficina", "/assets/viewOficina.fxml");
+        UtilsViews.addView(getClass(), "ViewSalas", "/assets/viewSalas.fxml");
         
 
         ctrlConfig = (CtrlConfig) UtilsViews.getController("ViewConfig");
         ctrlSockets = (CtrlSockets) UtilsViews.getController("ViewSockets");
         ctrlTaquilla= (CtrlTaquilla) UtilsViews.getController("ViewTaquilla");
+        ctrlSalas = (CtrlRecintos) UtilsViews.getController("ViewSalas");
         
         Scene scene = new Scene(UtilsViews.parentContainer);
 
@@ -122,6 +125,9 @@ public class Main extends Application {
                     case "oficina":
                         UtilsViews.setView("ViewOficina");
                         break;
+                    case "recintes":
+                        UtilsViews.setView("ViewSalas");
+                        break;
                 }
             });
         });
@@ -145,6 +151,8 @@ public class Main extends Application {
 
         if (type.equals("esdev")) {
             ctrlTaquilla.receiveEsdev(msgObj);
+        } else if (type.equals("mapa")) {
+            ctrlSalas.rebreMapa(msgObj);
         } else {
             ctrlSockets.receiveMessage(msgObj);
         }
