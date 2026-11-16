@@ -2,7 +2,11 @@ package com.project;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
@@ -22,12 +26,16 @@ public class UtilsWS {
 
     private boolean connecting = false;
 
-    // Constructor privado: la instancia se obtiene mediante getSharedInstance para reutilizar la conexión.
+    private ScheduledExecutorService keepAliveScheduler;
+
+    // Constructor privado: la instancia se obtiene mediante getSharedInstance para
+    // reutilizar la conexión.
     private UtilsWS(String location) {
         this.location = location;
     }
 
-    // Inicia la conexión si no existe ya una conexión abierta o en proceso de apertura.
+    // Inicia la conexión si no existe ya una conexión abierta o en proceso de
+    // apertura.
     public void connect() {
 
         if (client != null && (client.isOpen() || connecting)) {
@@ -37,7 +45,8 @@ public class UtilsWS {
         createNewWebSocketClient();
     }
 
-    // Crea el cliente WebSocket y define qué hacer al conectar, recibir mensajes, cerrar o producirse un error.
+    // Crea el cliente WebSocket y define qué hacer al conectar, recibir mensajes,
+    // cerrar o producirse un error.
     private void createNewWebSocketClient() {
 
         try {
@@ -53,13 +62,18 @@ public class UtilsWS {
                     String message = "WS connected to: " + getURI();
                     System.out.println(message);
 
+                    iniciarKeepAlive();
+
                     if (onOpenCallBack != null) {
                         onOpenCallBack.accept(message);
                     }
                 }
 
+            
+
                 @Override
                 public void onMessage(String message) {
+                    System.out.println("RESPUESTA DEL SERVIDOR: " + message);
 
                     if (onMessageCallBack != null) {
                         onMessageCallBack.accept(message);
@@ -70,8 +84,12 @@ public class UtilsWS {
                 public void onClose(int code, String reason, boolean remote) {
 
                     connecting = false;
+                    aturarKeepAlive();
 
-                    System.out.println("WS closed: " + reason);
+                    System.out.println("WS closed");
+                    System.out.println("Código: " + code);
+                    System.out.println("Motivo: " + reason);
+                    System.out.println("Cierre remoto: " + remote);
                 }
 
                 @Override
@@ -106,7 +124,8 @@ public class UtilsWS {
         }
     }
 
-    // Devuelve la instancia compartida; si cambia la URL, cierra la conexión anterior y crea otra.
+    // Devuelve la instancia compartida; si cambia la URL, cierra la conexión
+    // anterior y crea otra.
     public static synchronized UtilsWS getSharedInstance(String location) {
 
         if (sharedInstance == null ||
@@ -123,7 +142,8 @@ public class UtilsWS {
         return sharedInstance;
     }
 
-    // Registra las funciones que recibirán los avisos de conexión, mensajes y errores.
+    // Registra las funciones que recibirán los avisos de conexión, mensajes y
+    // errores.
     public void onOpen(Consumer<String> callBack) {
         onOpenCallBack = callBack;
     }
@@ -136,17 +156,49 @@ public class UtilsWS {
         onErrorCallBack = callBack;
     }
 
-    // Envía texto únicamente si el cliente está conectado; en caso contrario, informa del problema.
+    // Envía texto únicamente si el cliente está conectado; en caso contrario,
+    // informa del problema.
     public void safeSend(String text) {
-
         try {
+            System.out.println("1. Comprobando conexión...");
+
             if (client != null && client.isOpen()) {
+                System.out.println("2. Enviando mensaje: " + text);
+
                 client.send(text);
+
+                System.out.println("3. Mensaje enviado correctamente");
             } else {
-                System.out.println("WS Error: Client is not connected.");
+                System.out.println("ERROR: Cliente desconectado");
             }
+
         } catch (Exception e) {
-            System.out.println("WS Error sending message: " + e.getMessage());
+            System.out.println("ERROR al enviar: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void iniciarKeepAlive() {
+        aturarKeepAlive();
+        keepAliveScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "ws-keepalive");
+            t.setDaemon(true);
+            return t;
+        });
+        keepAliveScheduler.scheduleAtFixedRate(() -> {
+            try {
+                if (client != null && client.isOpen()) {
+                    client.sendPing();
+                }
+            } catch (Exception e) {
+                System.out.println("KeepAlive ping falló: " + e.getMessage());
+            }
+        }, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private void aturarKeepAlive() {
+        if (keepAliveScheduler != null && !keepAliveScheduler.isShutdown()) {
+            keepAliveScheduler.shutdownNow();
         }
     }
 
@@ -169,11 +221,11 @@ public class UtilsWS {
     public boolean isOpen() {
         return client != null && client.isOpen();
     }
-    
+
     // Solicita el cierre de la conexión si todavía está abierta.
     public void close() {
-    if (client != null && !client.isClosed()) {
-        client.close();
+        if (client != null && !client.isClosed()) {
+            client.close();
+        }
     }
-}
 }

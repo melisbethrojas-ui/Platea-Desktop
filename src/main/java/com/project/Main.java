@@ -21,6 +21,7 @@ public class Main extends Application {
     public static CtrlSockets ctrlSockets;
     public static CtrlTaquilla ctrlTaquilla;
     public static CtrlRecintos ctrlSalas;
+    public static CtrlPuerta ctrlPuerta;
 
     public static void main(String[] args) {
         launch(args);
@@ -29,7 +30,6 @@ public class Main extends Application {
     // Inicializa la ventana, carga las vistas y recupera la configuración guardada.
     @Override
     public void start(Stage stage) throws Exception {
-
         final int windowWidth = 400;
         final int windowHeight = 300;
 
@@ -41,13 +41,13 @@ public class Main extends Application {
         UtilsViews.addView(getClass(), "ViewPuerta", "/assets/viewPuerta.fxml");
         UtilsViews.addView(getClass(), "ViewOficina", "/assets/viewOficina.fxml");
         UtilsViews.addView(getClass(), "ViewSalas", "/assets/viewSalas.fxml");
-        
 
         ctrlConfig = (CtrlConfig) UtilsViews.getController("ViewConfig");
         ctrlSockets = (CtrlSockets) UtilsViews.getController("ViewSockets");
-        ctrlTaquilla= (CtrlTaquilla) UtilsViews.getController("ViewTaquilla");
+        ctrlTaquilla = (CtrlTaquilla) UtilsViews.getController("ViewTaquilla");
         ctrlSalas = (CtrlRecintos) UtilsViews.getController("ViewSalas");
-        
+        ctrlPuerta = (CtrlPuerta) UtilsViews.getController("ViewPuerta");
+
         Scene scene = new Scene(UtilsViews.parentContainer);
 
         stage.setScene(scene);
@@ -89,7 +89,8 @@ public class Main extends Application {
         return list;
     }
 
-    // Valida la URL, establece la conexión y abre la pantalla correspondiente a la ubicación elegida.
+    // Valida la URL, establece la conexión y abre la pantalla correspondiente a la
+    // ubicación elegida.
     public static void connectToServer() {
 
         if (ctrlConfig.getServidor().isEmpty()) {
@@ -143,28 +144,35 @@ public class Main extends Application {
         wsClient.connect();
     }
 
-    // Distribuye los mensajes recibidos: los eventos se muestran en taquilla y el resto se deriva al controlador de pruebas WebSocket.
+    // Distribuye los mensajes recibidos: los eventos se muestran en taquilla y el
+    // resto se deriva al controlador de pruebas WebSocket.
     private static void wsMessage(String response) {
+        System.out.println("Mensaje recibido del servidor: " + response);
+
         JSONObject msgObj = new JSONObject(response);
 
         String type = msgObj.optString("type", "");
-
         if (type.equals("esdev")) {
             ctrlTaquilla.receiveEsdev(msgObj);
+
         } else if (type.equals("mapa")) {
             ctrlSalas.rebreMapa(msgObj);
+
+        } else if (type.equals("validar")) {
+            ctrlPuerta.rebreValidacio(msgObj);
+
         } else {
             ctrlSockets.receiveMessage(msgObj);
         }
     }
 
-    // Muestra el error de conexión y devuelve al usuario a la pantalla de configuración.
+    // Muestra el error de conexión y devuelve al usuario a la pantalla de
+    // configuración.
     private static void wsError(String response) {
 
         ctrlConfig.txtMessage.setTextFill(Color.RED);
         ctrlConfig.txtMessage.setText(
-            "No se pudo conectar. Comprueba la URL e inténtalo de nuevo."
-        );
+                "No se pudo conectar. Comprueba la URL e inténtalo de nuevo.");
 
         UtilsViews.setView("ViewConfig");
 

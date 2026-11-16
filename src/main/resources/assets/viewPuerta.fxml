@@ -53,6 +53,8 @@
                                    promptText="Introdueix el codi"
                                    maxWidth="300.0"
                                    styleClass="form-field"/>
+                        <Button text="Validar entrada"
+                                     onAction="#validarEntrada"/>
                         <Label fx:id="txtResultado"
                                text="Esperant validació"
                                styleClass="status-message"/>
