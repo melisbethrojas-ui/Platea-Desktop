@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +19,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.control.ListView;
+
 
 public class CtrlRecintos implements Initializable{
 
@@ -51,6 +55,9 @@ public class CtrlRecintos implements Initializable{
     private TextArea txtDetallVenda;
 
     @FXML
+    private ListView<String> llistaVendes;
+
+    @FXML
     void volverConfiguracion(ActionEvent event) {
         UtilsViews.setView("ViewTaquilla");
     }
@@ -79,8 +86,59 @@ public class CtrlRecintos implements Initializable{
 
         labelRecinte.setText("Esdeveniment " + msgObj.optString("esdev", ""));
         txtDetallVenda.clear();
+        carregarLlistatVendes();
 
         drawSitios();
+    }
+    // Genera el listado de entradas vendidas del evento.
+    private void carregarLlistatVendes() {
+        if (llistaVendes == null) {
+            return;
+        }
+
+    llistaVendes.getItems().clear();
+
+    ArrayList<String> vendes = new ArrayList<>();
+
+    for (int f = 0; f < files; f++) {
+
+        for (int c = 0; c < columnes; c++) {
+
+            JSONArray celda =
+                matriu.getJSONArray(f).optJSONArray(c);
+
+            if (celda == null || celda.length() < 9) {
+                continue;
+            }
+
+            if (!"V".equals(celda.getString(3))) {
+                continue;
+            }
+
+            String zona = celda.getString(0);
+            int filaZona = celda.getInt(1);
+            int numero = celda.getInt(2);
+
+            String localitzador = celda.getString(4);
+            String comprador = celda.getString(5);
+            String dataCompra = celda.getString(7);
+
+            String linia =
+                dataCompra
+                + " | " + localitzador
+                + " | " + comprador
+                + " | Zona " + zona
+                + " Fila " + filaZona
+                + " Seient " + numero;
+
+            vendes.add(linia);
+        }
+        }
+
+        // Ordena cronológicamente por fecha de compra.
+         Collections.sort(vendes);
+
+        llistaVendes.getItems().addAll(vendes);
     }
 
     // Pinta la matriz recibida: cuadrado por zona + circulo por estado.
@@ -121,7 +179,7 @@ public class CtrlRecintos implements Initializable{
             }
         }
     }
-
+    
     // Hit-test: localiza la celda pulsada y muestra el detalle si esta vendida.
     private void seientClicat(MouseEvent event) {
 

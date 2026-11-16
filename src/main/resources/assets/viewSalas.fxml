@@ -4,6 +4,7 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -34,17 +35,23 @@
                     </padding>
                     <children>
                         <Label fx:id="labelRecinte" styleClass="section-title" text="Recinte1" />
-                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-                     <children>
-                        <Canvas fx:id="canvaRecintes" height="253.0" width="336.0" />
-                        <VBox spacing="5.0">
+                        
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                            <children>
-                              <Label styleClass="section-title" text="Detall de venda" />
-                              <TextArea fx:id="txtDetallVenda" editable="false" prefHeight="230.0" prefWidth="180.0" wrapText="true" />
+                              <Canvas fx:id="canvaRecintes" height="253.0" width="336.0" />
+                              <VBox spacing="5.0">
+                                 <children>
+                                    <Label styleClass="section-title" text="Detall de venda" />
+                                    <TextArea fx:id="txtDetallVenda" editable="false" prefHeight="230.0" prefWidth="180.0" wrapText="true" />
+                                 </children>
+                              </VBox>
                            </children>
-                        </VBox>
-                     </children>
-                  </HBox>
+                        </HBox>
+
+                        <!-- Elementos añadidos debajo del HBox -->
+                        <Label styleClass="section-title" text="Entrades venudes" />
+                        <ListView fx:id="llistaVendes" prefHeight="150.0" prefWidth="600.0" />
+
                     </children>
                 </VBox>
             </center>
