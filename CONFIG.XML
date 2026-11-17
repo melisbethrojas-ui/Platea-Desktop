@@ -3,5 +3,5 @@
 <properties>
 <comment>Configuracion de Platea</comment>
 <entry key="servidor">wss://platea4.ieti.site:443</entry>
-<entry key="ubicacion">porta</entry>
+<entry key="ubicacion">taquilla</entry>
 </properties>

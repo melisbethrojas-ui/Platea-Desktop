@@ -39,6 +39,7 @@ public class CtrlRecintos implements Initializable{
 
     private static final Color COLOR_LIURE = Color.web("#9E9E9E");
     private static final Color COLOR_VENUT = Color.web("#D32F2F");
+     private static final Color COLOR_PASS = Color.web("#FF9EC8");
 
     private JSONArray matriu;
     private int files;
@@ -107,11 +108,12 @@ public class CtrlRecintos implements Initializable{
             JSONArray celda =
                 matriu.getJSONArray(f).optJSONArray(c);
 
-            if (celda == null || celda.length() < 9) {
+            if (celda == null || celda.length() < 10) {
                 continue;
             }
 
-            if (!"V".equals(celda.getString(3))) {
+            String estat = celda.getString(3);
+            if (!"V".equals(estat) && !"P".equals(estat)) {
                 continue;
             }
 
@@ -119,12 +121,14 @@ public class CtrlRecintos implements Initializable{
             int filaZona = celda.getInt(1);
             int numero = celda.getInt(2);
 
-            String localitzador = celda.getString(4);
+            String codi = celda.getString(4);
+            String localitzador = celda.getString(9);
             String comprador = celda.getString(5);
             String dataCompra = celda.getString(7);
 
             String linia =
                 dataCompra
+                + " | " + codi
                 + " | " + localitzador
                 + " | " + comprador
                 + " | Zona " + zona
@@ -172,9 +176,12 @@ public class CtrlRecintos implements Initializable{
                 gc.setFill(colorZona);
                 gc.fillRect(x, y, costat, costat);
 
-                boolean venut = celda.length() > 4 && "V".equals(celda.getString(3));
+                String estat = celda.length() > 3 ? celda.getString(3) : "";
+                Color colorEstat = "V".equals(estat) ? COLOR_VENUT
+                                 : "P".equals(estat) ? COLOR_PASS
+                                 : COLOR_LIURE;
 
-                gc.setFill(venut ? COLOR_VENUT : COLOR_LIURE);
+                gc.setFill(colorEstat);
                 gc.fillOval(x, y, costat, costat);
             }
         }
@@ -198,7 +205,12 @@ public class CtrlRecintos implements Initializable{
 
         JSONArray celda = matriu.getJSONArray(fila).optJSONArray(columna);
 
-        if (celda == null || celda.length() < 9 || !"V".equals(celda.getString(3))) {
+        if (celda == null || celda.length() < 10) {
+            return;
+        }
+
+        String estat = celda.getString(3);
+        if (!"V".equals(estat) && !"P".equals(estat)) {
             return;
         }
 
@@ -210,10 +222,12 @@ public class CtrlRecintos implements Initializable{
         String correu = celda.getString(6);
         String dataCompra = celda.getString(7);
         double preu = celda.getDouble(8);
+        String localitzador = celda.getString(9);
 
         txtDetallVenda.setText(
             "Zona " + zona + " - fila " + filaZona + ", seient " + numero + "\n"
             + "Venda: " + codi + "\n"
+            + "Localitzador: " + localitzador + "\n"
             + "Comprador: " + comprador + "\n"
             + "Correu: " + correu + "\n"
             + "Data compra: " + dataCompra + "\n"
